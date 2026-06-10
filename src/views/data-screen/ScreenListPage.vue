@@ -55,13 +55,11 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup >
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search, Plus, View, Edit, CopyDocument, Delete, Monitor } from '@element-plus/icons-vue'
 import { useScreenStore } from '@/stores/screen'
-import type { ScreenConfig } from '@/types/screen'
-
 const router = useRouter()
 const screenStore = useScreenStore()
 
@@ -81,15 +79,15 @@ function handleCreate() {
   router.push(`/data-screen/editor/${newId}`)
 }
 
-function handlePreview(screen: ScreenConfig) {
+function handlePreview(screen) {
   window.open(`/data-screen/display/${screen.id}`, '_blank')
 }
 
-function handleEdit(screen: ScreenConfig) {
+function handleEdit(screen) {
   router.push(`/data-screen/editor/${screen.id}`)
 }
 
-function handleCopy(screen: ScreenConfig) {
+function handleCopy(screen) {
   const newScreen = {
     ...screen,
     id: String(Date.now()),
@@ -100,7 +98,7 @@ function handleCopy(screen: ScreenConfig) {
   screenStore.addScreen(newScreen)
 }
 
-function handleDelete(id: string) {
+function handleDelete(id) {
   screenStore.removeScreen(id)
 }
 
@@ -116,7 +114,7 @@ onMounted(() => {
   align-items: center;
   margin-bottom: 20px;
   padding: 16px 20px;
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 8px;
 }
 
@@ -128,13 +126,13 @@ onMounted(() => {
 }
 
 .screen-card {
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 8px;
   overflow: hidden;
   transition: box-shadow 0.3s, transform 0.3s;
 
   &:hover {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-card);
     transform: translateY(-2px);
   }
 
@@ -167,19 +165,19 @@ onMounted(() => {
     .card-title {
       font-size: 16px;
       font-weight: 600;
-      color: #1d2129;
+      color: var(--text-primary);
       margin-bottom: 4px;
     }
 
     .card-desc {
       font-size: 13px;
-      color: #86909c;
+      color: var(--text-secondary);
       margin-bottom: 8px;
     }
 
     .card-meta {
       font-size: 12px;
-      color: #c9cdd4;
+      color: var(--text-tertiary);
     }
   }
 
@@ -187,7 +185,7 @@ onMounted(() => {
     display: flex;
     gap: 4px;
     padding: 0 16px 12px;
-    border-top: 1px solid #f2f3f5;
+    border-top: 1px solid var(--border-light);
     padding-top: 12px;
   }
 }

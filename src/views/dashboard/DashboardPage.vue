@@ -14,13 +14,25 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue'
+<script setup>
+import { ref, onMounted } from 'vue'
+import api from '@/api'
 
 const stats = ref([
-  { label: '大屏总数', value: 3, prefix: '', suffix: '个' },
-  { label: '报表数量', value: 128, prefix: '', suffix: '份' },
-  { label: '今日访问', value: 2563, prefix: '', suffix: '次' },
-  { label: '活跃用户', value: 486, prefix: '', suffix: '人' },
+  { label: '大屏总数', value: '--', prefix: '', suffix: '个' },
+  { label: '报表数量', value: '--', prefix: '', suffix: '份' },
+  { label: '今日交易', value: '--', prefix: '', suffix: '笔' },
+  { label: '活跃用户', value: '--', prefix: '', suffix: '人' },
 ])
+
+onMounted(async () => {
+  try {
+    const data = await api.get('/dashboard/stats')
+    if (Array.isArray(data) && data.length > 0) {
+      stats.value = data
+    }
+  } catch (err) {
+    console.error('获取仪表盘数据失败:', err)
+  }
+})
 </script>

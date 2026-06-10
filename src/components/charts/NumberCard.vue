@@ -20,19 +20,19 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { computed } from 'vue'
 import { CaretTop, CaretBottom, Minus } from '@element-plus/icons-vue'
 
-const props = defineProps<{
-  title: string
-  value: number
-  prefix?: string
-  suffix?: string
-  trend?: 'up' | 'down' | 'flat'
-  trendValue?: number
-  color?: string
-}>()
+const props = defineProps({
+  title: { type: String, required: true },
+  value: { type: Number, required: true },
+  prefix: String,
+  suffix: String,
+  trend: String,
+  trendValue: Number,
+  color: String,
+})
 
 const displayValue = computed(() => {
   if (props.value >= 10000) {

@@ -103,19 +103,19 @@
         <div v-else class="props-content">
           <el-form label-width="80px" size="small">
             <el-form-item label="标题">
-              <el-input v-model="selectedWidget!.title" />
+              <el-input v-model="selectedWidget.title" />
             </el-form-item>
             <el-form-item label="X坐标">
-              <el-input-number v-model="selectedWidget!.x" :min="0" />
+              <el-input-number v-model="selectedWidget.x" :min="0" />
             </el-form-item>
             <el-form-item label="Y坐标">
-              <el-input-number v-model="selectedWidget!.y" :min="0" />
+              <el-input-number v-model="selectedWidget.y" :min="0" />
             </el-form-item>
             <el-form-item label="宽度">
-              <el-input-number v-model="selectedWidget!.w" :min="100" />
+              <el-input-number v-model="selectedWidget.w" :min="100" />
             </el-form-item>
             <el-form-item label="高度">
-              <el-input-number v-model="selectedWidget!.h" :min="100" />
+              <el-input-number v-model="selectedWidget.h" :min="100" />
             </el-form-item>
           </el-form>
         </div>
@@ -124,7 +124,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
@@ -132,17 +132,18 @@ import {
   DataAnalysis, TrendCharts, PieChart, Histogram,
   Odometer, Collection, Tickets, Clock,
 } from '@element-plus/icons-vue'
-import type { ScreenWidget, WidgetType } from '@/types/screen'
+// ScreenWidget 是 TS 接口，JS 中无需导入
+import { WidgetType } from '@/types/screen'
 
 const route = useRoute()
 const router = useRouter()
 
 const screenTitle = ref('未命名大屏')
-const currentTheme = ref<'dark' | 'light'>('dark')
+const currentTheme = ref('dark')
 const canvasWidth = ref(1920)
 const canvasHeight = ref(1080)
-const widgets = ref<ScreenWidget[]>([])
-const selectedWidgetId = ref<string | null>(null)
+const widgets = ref([])
+const selectedWidgetId = ref(null)
 
 const selectedWidget = computed(() =>
   widgets.value.find((w) => w.id === selectedWidgetId.value) || null
@@ -150,21 +151,21 @@ const selectedWidget = computed(() =>
 
 // 组件库
 const basicWidgets = [
-  { type: 'number-card' as WidgetType, label: '指标卡', icon: Odometer },
-  { type: 'line-chart' as WidgetType, label: '折线图', icon: TrendCharts },
-  { type: 'bar-chart' as WidgetType, label: '柱状图', icon: Histogram },
-  { type: 'pie-chart' as WidgetType, label: '饼图', icon: PieChart },
-  { type: 'area-chart' as WidgetType, label: '面积图', icon: DataAnalysis },
-  { type: 'table' as WidgetType, label: '表格', icon: Collection },
-  { type: 'ranking-list' as WidgetType, label: '排名列表', icon: Tickets },
-  { type: 'datetime' as WidgetType, label: '日期时间', icon: Clock },
+  { type: 'number-card', label: '指标卡', icon: Odometer },
+  { type: 'line-chart', label: '折线图', icon: TrendCharts },
+  { type: 'bar-chart', label: '柱状图', icon: Histogram },
+  { type: 'pie-chart', label: '饼图', icon: PieChart },
+  { type: 'area-chart', label: '面积图', icon: DataAnalysis },
+  { type: 'table', label: '表格', icon: Collection },
+  { type: 'ranking-list', label: '排名列表', icon: Tickets },
+  { type: 'datetime', label: '日期时间', icon: Clock },
 ]
 
 const datavWidgets = [
-  { type: 'border-box' as WidgetType, label: '边框1', icon: MagicStick },
-  { type: 'border-box' as WidgetType, label: '边框2', icon: MagicStick },
-  { type: 'border-box' as WidgetType, label: '装饰1', icon: MagicStick },
-  { type: 'border-box' as WidgetType, label: '装饰2', icon: MagicStick },
+  { type: 'border-box', label: '边框1', icon: MagicStick },
+  { type: 'border-box', label: '边框2', icon: MagicStick },
+  { type: 'border-box', label: '装饰1', icon: MagicStick },
+  { type: 'border-box', label: '装饰2', icon: MagicStick },
 ]
 
 function goBack() {
@@ -179,18 +180,18 @@ function handleSave() {
   ElMessage.success('保存成功')
 }
 
-function handleDragStart(event: DragEvent, widget: (typeof basicWidgets)[0] | (typeof datavWidgets)[0]) {
-  event.dataTransfer!.setData('widgetType', widget.type)
-  event.dataTransfer!.setData('widgetLabel', widget.label)
+function handleDragStart(event, widget) {
+  event.dataTransfer.setData('widgetType', widget.type)
+  event.dataTransfer.setData('widgetLabel', widget.label)
 }
 
-function handleDrop(event: DragEvent) {
-  const type = event.dataTransfer!.getData('widgetType') as WidgetType
-  const label = event.dataTransfer!.getData('widgetLabel')
-  const rect = (event.target as HTMLElement).closest('.editor-canvas')?.getBoundingClientRect()
+function handleDrop(event) {
+  const type = event.dataTransfer.getData('widgetType')
+  const label = event.dataTransfer.getData('widgetLabel')
+  const rect = event.target.closest('.editor-canvas')?.getBoundingClientRect()
   if (!rect) return
 
-  const newWidget: ScreenWidget = {
+  const newWidget = {
     id: `w_${Date.now()}`,
     type,
     title: label,
@@ -204,21 +205,21 @@ function handleDrop(event: DragEvent) {
   selectedWidgetId.value = newWidget.id
 }
 
-function handleWidgetSelect(widget: ScreenWidget) {
+function handleWidgetSelect(widget) {
   selectedWidgetId.value = widget.id
 }
 
-function removeWidget(id: string) {
+function removeWidget(id) {
   widgets.value = widgets.value.filter((w) => w.id !== id)
   if (selectedWidgetId.value === id) selectedWidgetId.value = null
 }
 
-function getWidgetIcon(type: WidgetType) {
+function getWidgetIcon(type) {
   const found = basicWidgets.find((w) => w.type === type)
   return found?.icon || DataAnalysis
 }
 
-function widgetStyle(widget: ScreenWidget) {
+function widgetStyle(widget) {
   return {
     left: widget.x + 'px',
     top: widget.y + 'px',
@@ -241,8 +242,8 @@ function widgetStyle(widget: ScreenWidget) {
   justify-content: space-between;
   height: 48px;
   padding: 0 16px;
-  background: #fff;
-  border-bottom: 1px solid #e5e6eb;
+  background: var(--bg-header);
+  border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
 
   .toolbar-left,
@@ -263,8 +264,8 @@ function widgetStyle(widget: ScreenWidget) {
 // 左侧组件面板
 .widget-panel {
   width: 200px;
-  background: #fafafa;
-  border-right: 1px solid #e5e6eb;
+  background: var(--bg-card-hover);
+  border-right: 1px solid var(--border-color);
   padding: 12px;
   overflow-y: auto;
   flex-shrink: 0;
@@ -274,7 +275,7 @@ function widgetStyle(widget: ScreenWidget) {
 
     h4 {
       font-size: 13px;
-      color: #86909c;
+      color: var(--text-secondary);
       margin-bottom: 8px;
       font-weight: 500;
     }
@@ -291,8 +292,8 @@ function widgetStyle(widget: ScreenWidget) {
       align-items: center;
       gap: 4px;
       padding: 12px 8px;
-      background: #fff;
-      border: 1px solid #e5e6eb;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
       border-radius: 6px;
       cursor: grab;
       transition: all 0.2s;
@@ -384,8 +385,8 @@ function widgetStyle(widget: ScreenWidget) {
 // 右侧属性面板
 .props-panel {
   width: 280px;
-  background: #fafafa;
-  border-left: 1px solid #e5e6eb;
+  background: var(--bg-card-hover);
+  border-left: 1px solid var(--border-color);
   padding: 12px;
   flex-shrink: 0;
   overflow-y: auto;

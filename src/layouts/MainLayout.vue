@@ -1,7 +1,11 @@
 <template>
   <el-container class="main-layout">
     <!-- 侧边栏 -->
-    <el-aside :width="sidebarCollapsed ? '64px' : '220px'" class="main-aside">
+    <el-aside
+      v-show="showLayoutChrome"
+      :width="sidebarCollapsed ? '64px' : '220px'"
+      class="main-aside"
+    >
       <div class="logo-area" @click="goHome">
         <img src="/vite.svg" alt="logo" class="logo-img" />
         <span v-show="!sidebarCollapsed" class="logo-text">金融数据平台</span>
@@ -10,9 +14,9 @@
         :default-active="activeMenu"
         :collapse="sidebarCollapsed"
         :collapse-transition="false"
-        background-color="#001529"
-        text-color="#ffffff80"
-        active-text-color="#00d4ff"
+        background-color="var(--bg-sidebar)"
+        text-color="var(--text-sidebar)"
+        active-text-color="var(--text-sidebar-active)"
         router
       >
         <el-menu-item index="/dashboard">
@@ -45,7 +49,7 @@
 
     <el-container>
       <!-- 顶部栏 -->
-      <el-header class="main-header">
+      <el-header v-show="showLayoutChrome" class="main-header">
         <div class="header-left">
           <el-button
             :icon="Fold"
@@ -58,13 +62,29 @@
           </el-breadcrumb>
         </div>
         <div class="header-right">
-          <el-switch
-            v-model="isDark"
-            :active-action-icon="Moon"
-            :inactive-action-icon="Sunny"
-            inline-prompt
-            @change="handleThemeChange"
-          />
+          <el-dropdown trigger="click" @command="handleThemeSelect">
+            <el-button :icon="Brush" text title="切换主题" />
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item
+                  v-for="theme in appStore.themes"
+                  :key="theme.id"
+                  :command="theme.id"
+                  :class="{ 'is-active': appStore.currentTheme === theme.id }"
+                >
+                  <span class="theme-colors">
+                    <span
+                      v-for="color in theme.colors"
+                      :key="color"
+                      class="theme-dot"
+                      :style="{ background: color }"
+                    />
+                  </span>
+                  <span>{{ theme.name }}</span>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
           <el-badge :value="3" :max="99">
             <el-button :icon="Bell" circle text />
           </el-badge>
@@ -84,17 +104,17 @@
       </el-header>
 
       <!-- 主内容区 -->
-      <el-main class="main-content">
+      <el-main :class="['main-content', { 'fullscreen-mode': isDataScreenFullscreen }]">
         <router-view />
       </el-main>
     </el-container>
   </el-container>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { HomeFilled, Monitor, Document, DataAnalysis, Setting, Fold, Bell, Moon, Sunny } from '@element-plus/icons-vue'
+import { HomeFilled, Monitor, Document, DataAnalysis, Setting, Fold, Bell, Brush } from '@element-plus/icons-vue'
 import { useAppStore } from '@/stores/app'
 
 const route = useRoute()
@@ -102,16 +122,28 @@ const router = useRouter()
 const appStore = useAppStore()
 
 const sidebarCollapsed = computed(() => appStore.sidebarCollapsed)
-const isDark = computed(() => appStore.currentTheme === 'dark')
 const activeMenu = computed(() => route.path)
-const currentTitle = computed(() => route.meta?.title as string)
+const currentTitle = computed(() => route.meta?.title)
+
+/** 当前路由是否为大屏展示页 */
+const isDataScreenDisplay = computed(() =>
+  route.path.startsWith('/data-screen/display/')
+)
+
+/** 大屏展示页的全屏模式 */
+const isDataScreenFullscreen = computed(() =>
+  isDataScreenDisplay.value && appStore.dataScreenFullscreen
+)
+
+/** 是否显示侧边栏和顶栏（大屏全屏时隐藏） */
+const showLayoutChrome = computed(() => !isDataScreenFullscreen.value)
 
 function goHome() {
   router.push('/data-screen')
 }
 
-function handleThemeChange(val: string | number | boolean) {
-  appStore.setTheme(val ? 'dark' : 'light')
+function handleThemeSelect(themeId) {
+  appStore.setTheme(themeId)
 }
 </script>
 
@@ -121,7 +153,7 @@ function handleThemeChange(val: string | number | boolean) {
 }
 
 .main-aside {
-  background: #001529;
+  background: var(--bg-sidebar);
   overflow: hidden;
   transition: width 0.3s;
 
@@ -156,8 +188,8 @@ function handleThemeChange(val: string | number | boolean) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #fff;
-  border-bottom: 1px solid #e5e6eb;
+  background: var(--bg-header);
+  border-bottom: 1px solid var(--border-color);
   padding: 0 16px;
 
   .header-left {
@@ -179,7 +211,7 @@ function handleThemeChange(val: string | number | boolean) {
 
       .user-name {
         font-size: 14px;
-        color: #333;
+        color: var(--text-primary);
       }
     }
   }
@@ -188,7 +220,28 @@ function handleThemeChange(val: string | number | boolean) {
 .main-content {
   height: calc(100vh - $header-height);
   overflow: auto;
-  background: #f0f2f5;
+  background: var(--bg-body);
   padding: 0;
+
+  &.fullscreen-mode {
+    height: 100vh;
+    overflow: hidden;
+  }
+}
+
+// ========== 主题切换下拉 ==========
+.theme-colors {
+  display: inline-flex;
+  gap: 3px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+.theme-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 </style>

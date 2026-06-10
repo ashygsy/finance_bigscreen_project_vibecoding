@@ -9,7 +9,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 // ============================================================
 // BaseChart — 基于策略模式的通用图表组件
 //
@@ -22,47 +22,36 @@
 // ============================================================
 import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import { Loading } from '@element-plus/icons-vue'
-import type { EChartsOption } from 'echarts'
 import echarts from '@/utils/echarts'
-import type { ChartData, ChartIdentifier } from '@/strategies/chart/types'
 import { ChartStrategyFactory } from '@/strategies/chart/ChartStrategyFactory'
 import { ChartType } from '@/strategies/chart/types'
 import { useChartDataStore } from '@/stores/chart-data'
 import { useChartInteraction } from '@/composables/useChartInteraction'
 
 // ============ Props ============
-const props = withDefaults(defineProps<{
+const props = defineProps({
   // 策略模式 props
-  chartId?: ChartIdentifier
-  chartType?: string // ChartType 枚举值: 'line' | 'bar' | 'pie' | 'radar' | 'scatter' | 'gauge'
-  staticData?: ChartData
-  dataKey?: string
+  chartId: String,
+  chartType: String, // ChartType 枚举值: 'line' | 'bar' | 'pie' | 'radar' | 'scatter' | 'gauge'
+  staticData: Object,
+  dataKey: String,
 
   // 直接模式 props（兼容）
-  option?: EChartsOption
+  option: Object,
 
   // 通用 props
-  height?: string
-  theme?: 'dark' | 'light'
-  enableDrillDown?: boolean
-  enableLinkage?: boolean
-}>(), {
-  height: '100%',
-  theme: 'dark',
-  enableDrillDown: true,
-  enableLinkage: true,
+  height: { type: String, default: '100%' },
+  theme: { type: String, default: 'dark' },
+  enableDrillDown: { type: Boolean, default: true },
+  enableLinkage: { type: Boolean, default: true },
 })
 
 // ============ Emits ============
-const emit = defineEmits<{
-  (e: 'chart-ready', instance: any): void
-  (e: 'drill-down', params: any): void
-  (e: 'linkage', sourceId: string, params: any): void
-}>()
+const emit = defineEmits(['chart-ready', 'drill-down', 'linkage'])
 
 // ============ State ============
-const chartRef = ref<HTMLElement>()
-let chartInstance: any = null
+const chartRef = ref(null)
+let chartInstance = null
 const loading = ref(false)
 const dataStore = useChartDataStore()
 
@@ -73,8 +62,8 @@ const useStrategy = computed(() => !!(props.chartId && props.chartType))
 const interaction = computed(() => {
   if (!useStrategy.value || !props.chartId) return null
   return useChartInteraction(
-    props.chartId!,
-    computed(() => ChartStrategyFactory.get(props.chartId!) || null),
+    props.chartId,
+    computed(() => ChartStrategyFactory.get(props.chartId) || null),
     {
       enableDrillDown: props.enableDrillDown,
       enableLinkage: props.enableLinkage,
@@ -85,7 +74,7 @@ const interaction = computed(() => {
 })
 
 // ============ 暗色主题默认配置 ============
-const darkThemeDefaults: EChartsOption = {
+const darkThemeDefaults = {
   color: ['#00d4ff', '#00ff88', '#ffa940', '#ff4d4f', '#9254de', '#36cfc9', '#f759ab'],
   backgroundColor: 'transparent',
   textStyle: { color: '#8899bb' },
@@ -106,12 +95,12 @@ const darkThemeDefaults: EChartsOption = {
 }
 
 // ============ 获取最终渲染配置 ============
-function resolveOption(): EChartsOption {
+function resolveOption() {
   // 模式1: 策略模式 — 由策略工厂根据 chartType 自动生成配置
   if (useStrategy.value && props.chartId && props.chartType) {
     const strategy = ChartStrategyFactory.create(
       props.chartId,
-      props.chartType as ChartType
+      props.chartType
     )
 
     // 尝试从 Store 获取数据
@@ -138,7 +127,7 @@ function resolveOption(): EChartsOption {
 }
 
 // ============ 初始化 ============
-function initChart(): void {
+function initChart() {
   if (!chartRef.value) return
 
   chartInstance = echarts.init(chartRef.value)
@@ -155,11 +144,11 @@ function initChart(): void {
   emit('chart-ready', chartInstance)
 }
 
-function resizeChart(): void {
+function resizeChart() {
   chartInstance?.resize()
 }
 
-let resizeObserver: ResizeObserver | null = null
+let resizeObserver = null
 
 onMounted(() => {
   initChart()
@@ -184,7 +173,7 @@ onUnmounted(() => {
 
 // 响应 props 和 Store 变化
 watch(
-  () => [props.option, props.staticData, props.chartType, dataStore.getDataByKey(props.dataKey || props.chartId || '')] as const,
+  () => [props.option, props.staticData, props.chartType, dataStore.getDataByKey(props.dataKey || props.chartId || '')],
   () => {
     chartInstance?.setOption(resolveOption(), true)
   },

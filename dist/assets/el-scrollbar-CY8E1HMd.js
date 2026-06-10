@@ -1,0 +1,1 @@
+import{a4 as u,j as s,aL as p,aM as f,aN as m}from"./index-klcnpeld.js";const h=u("app",()=>{const a=s(!1),t=s(p()),r=f,n=s(!1);function o(){a.value=!a.value}function l(e){t.value=e,m(e)}function c(e){n.value=e}return{sidebarCollapsed:a,currentTheme:t,themes:r,dataScreenFullscreen:n,toggleSidebar:o,setTheme:l,setDataScreenFullscreen:c}});export{h as u};

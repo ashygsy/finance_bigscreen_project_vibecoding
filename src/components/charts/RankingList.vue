@@ -11,12 +11,12 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { computed } from 'vue'
 
-const props = defineProps<{
-  data: { label: string; value: number }[]
-}>()
+const props = defineProps({
+  data: { type: Array, required: true },
+})
 
 const maxValue = computed(() => Math.max(...props.data.map((d) => d.value), 1))
 </script>

@@ -1,0 +1,132 @@
+// ============================================================
+// CSS 自定义属性 — 多主题配色
+//
+// :root 定义默认值（暗夜蓝），各 [data-theme] 覆盖对应变量。
+// 组件中通过 var(--xxx) 引用即可自动跟随主题切换。
+// ============================================================
+
+// ==================== 默认主题：暗夜蓝 (dark) ====================
+:root,
+[data-theme='dark-blue'] {
+  // 背景
+  --bg-body: #f0f2f5;
+  --bg-sidebar: #001529;
+  --bg-header: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #fafafa;
+
+  // 文字
+  --text-primary: #1d2129;
+  --text-secondary: #86909c;
+  --text-tertiary: #c9cdd4;
+  --text-sidebar: rgba(255, 255, 255, 0.5);
+  --text-sidebar-hover: rgba(255, 255, 255, 0.8);
+  --text-sidebar-active: #00d4ff;
+
+  // 边框
+  --border-color: #e5e6eb;
+  --border-light: #f2f3f5;
+
+  // 强调色
+  --accent-color: #1890ff;
+  --accent-secondary: #00d4ff;
+
+  // 阴影
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+// ==================== 极简白 (light) ====================
+[data-theme='minimal-light'] {
+  --bg-body: #f5f6f8;
+  --bg-sidebar: #ffffff;
+  --bg-header: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f9fafb;
+
+  --text-primary: #1d2129;
+  --text-secondary: #86909c;
+  --text-tertiary: #c9cdd4;
+  --text-sidebar: #4e5969;
+  --text-sidebar-hover: #1d2129;
+  --text-sidebar-active: #1890ff;
+
+  --border-color: #e5e6eb;
+  --border-light: #f2f3f5;
+
+  --accent-color: #1890ff;
+  --accent-secondary: #00c2ff;
+
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+// ==================== 深邃紫 (dark) ====================
+[data-theme='deep-purple'] {
+  --bg-body: #f0edf5;
+  --bg-sidebar: #1a1025;
+  --bg-header: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f9f7fc;
+
+  --text-primary: #1d1a24;
+  --text-secondary: #7c7491;
+  --text-tertiary: #b8b0cc;
+  --text-sidebar: rgba(255, 255, 255, 0.5);
+  --text-sidebar-hover: rgba(255, 255, 255, 0.8);
+  --text-sidebar-active: #c084fc;
+
+  --border-color: #e5e0f0;
+  --border-light: #f2edf8;
+
+  --accent-color: #a855f7;
+  --accent-secondary: #c084fc;
+
+  --shadow-card: 0 2px 12px rgba(120, 60, 200, 0.06);
+}
+
+// ==================== 墨金 (dark) ====================
+[data-theme='ink-gold'] {
+  --bg-body: #f5f3f0;
+  --bg-sidebar: #1c1917;
+  --bg-header: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #faf9f7;
+
+  --text-primary: #1d1b18;
+  --text-secondary: #8c8579;
+  --text-tertiary: #bfb8aa;
+  --text-sidebar: rgba(255, 255, 255, 0.5);
+  --text-sidebar-hover: rgba(255, 255, 255, 0.8);
+  --text-sidebar-active: #fbbf24;
+
+  --border-color: #e8e0d5;
+  --border-light: #f5efe5;
+
+  --accent-color: #f59e0b;
+  --accent-secondary: #fbbf24;
+
+  --shadow-card: 0 2px 12px rgba(180, 120, 30, 0.06);
+}
+
+// ==================== 青翠绿 (dark) ====================
+[data-theme='jade-green'] {
+  --bg-body: #edf5f1;
+  --bg-sidebar: #0d1f17;
+  --bg-header: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f6faf7;
+
+  --text-primary: #1a231e;
+  --text-secondary: #6b8b78;
+  --text-tertiary: #a3c1ae;
+  --text-sidebar: rgba(255, 255, 255, 0.5);
+  --text-sidebar-hover: rgba(255, 255, 255, 0.8);
+  --text-sidebar-active: #34d399;
+
+  --border-color: #d8e8dd;
+  --border-light: #eaf5ee;
+
+  --accent-color: #10b981;
+  --accent-secondary: #34d399;
+
+  --shadow-card: 0 2px 12px rgba(16, 140, 90, 0.06);
+}
